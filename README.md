@@ -1,7 +1,7 @@
 # Three-Body Simulation and Lyapunov Exponent Calculation
 
 ## Overview
-This project simulates the motion of three bodies under gravitational attraction and calculates the Lyapunov exponent to analyze the system's chaotic behavior. It uses Python libraries such as `numpy`, `pandas`, `matplotlib`, `pygame`, and `tqdm` for numerical calculations, data handling, visualization, animation, and progress tracking.
+This project simulates the motion of three bodies under gravitational attraction and calculates the proximity function to analyze the system's chaotic behavior. It uses Python libraries such as `numpy`, `pandas`, `matplotlib`, `pygame`, and `tqdm` for numerical calculations, data handling, visualization, animation, and progress tracking.
 
 ## Project Structure
 - `Body` class: Represents a single body in the system.
