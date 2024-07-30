@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/joeliang/Joe/Coding/3bodyC/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DFMT_HEADER_ONLY=1 -isystem /opt/homebrew/opt/fmt/include -g -std=c++14 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -mmacosx-version-min=14.1 -o CMakeFiles/main.dir/main.cpp.o -c /Users/joeliang/Joe/Coding/3bodyC/main.cpp",
+  "file": "/Users/joeliang/Joe/Coding/3bodyC/main.cpp",
+  "output": "CMakeFiles/main.dir/main.cpp.o"
+}
+]

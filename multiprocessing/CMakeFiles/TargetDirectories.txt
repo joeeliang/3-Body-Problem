@@ -1,0 +1,3 @@
+/Users/joeliang/Joe/Coding/3bodyC/build/CMakeFiles/main.dir
+/Users/joeliang/Joe/Coding/3bodyC/build/CMakeFiles/edit_cache.dir
+/Users/joeliang/Joe/Coding/3bodyC/build/CMakeFiles/rebuild_cache.dir
