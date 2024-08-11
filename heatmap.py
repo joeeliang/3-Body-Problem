@@ -1,11 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from visualization import pygame_run
+import visualization 
 from utils import make_state
 import pandas as pd
+import runcpp
 import os
 
-def plot_proximity_heatmap(vx_values, vy_values, proximity_values):
+def plot_proximity_heatmap(data_path):
+    data = pd.read_csv(data_path)
+    vx_values = data['vx'].values
+    vy_values = data['vy'].values
+    proximity_values = data['proximity'].values
     # Reshape the proximity_values into a 2D array for heatmap plotting
     num_vx = len(np.unique(vx_values))
     num_vy = len(np.unique(vy_values))
@@ -20,7 +25,7 @@ def plot_proximity_heatmap(vx_values, vy_values, proximity_values):
     extent = [vx_range.min(), vx_range.max(), vy_range.min(), vy_range.max()]
     cmap = plt.cm.get_cmap('hot')
     cmap.set_under('cyan') 
-    plt.imshow(proximity_heatmap, origin='lower', cmap=cmap, extent=extent, aspect='auto', vmin=0.01)
+    plt.imshow(proximity_heatmap, origin='lower', cmap=cmap, extent=extent, aspect='auto', vmin=0.002)
     plt.colorbar(label='proximity')
     plt.xlabel('vx')
     plt.ylabel('vy')
@@ -52,19 +57,24 @@ def plot_proximity_heatmap(vx_values, vy_values, proximity_values):
                     print(f'Pressed u at (vx, vy): {vx_selected}, {vy_selected}, {proximity_heatmap[y_index, x_index]}')
                     # Debug print before calling the animation
                     print("Calling animation.animate with:", vx_selected, vy_selected)
-                    pygame_run(make_state(1, vx_selected, vy_selected,))
+                    str_arr = ' '.join(map(str, [1, vx_selected,vy_selected]))
+                    runcpp.get_positions(str_arr)
+                    
+                    visualization.pygame_animate("positions.csv")
+                    
         if event.key == 'm':
             x, y = event.xdata, event.ydata
             if x is not None and y is not None:
                 print(x, y)
             
-
-
+    ax = plt.gca()
     plt.gcf().canvas.mpl_connect('key_press_event', on_key)
     plt.show()
+    
+    return ax
 
-data = pd.read_csv('/Users/joeliang/Joe/Coding/3-Body-Problem/multiprocessing/build/enhanced/swapped.csv')
-vx_values = data['vx'].values
-vy_values = data['vy'].values
-proximity_values = data['proximity'].values
-plot_proximity_heatmap(vx_values, vy_values, proximity_values)
+def get_axis_limits(ax):
+    return ax.get_xlim(), ax.get_ylim()
+
+if __name__ == '__main__':
+    plot_proximity_heatmap('/Users/joeliang/Joe/Coding/3-Body-Problem/data/zoom.csv')

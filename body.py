@@ -33,6 +33,15 @@ class Body:
                 y = 1000 - (point[1] * scale + 500)
                 updatedPoints.append((x, y))
             pygame.draw.lines(win, self.colour, False, updatedPoints, 3)
+    
+    def draw_loop(self, system, positions, win):
+        scale = 200
+        updatedPoints = []
+        for point in positions[:, system.bodies.index(self)]:
+            x = point[0] * scale + 500
+            y = 1000 - (point[1] * scale + 500)
+            updatedPoints.append((x, y))
+        pygame.draw.lines(win, self.colour, False, updatedPoints, 3)
 
     def get_state(self):
         return np.array([self.position[0], self.position[1], self.velocity[0], self.velocity[1]])
