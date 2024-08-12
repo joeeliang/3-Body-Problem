@@ -60,7 +60,7 @@ def plot_proximity_heatmap(data_path):
                     str_arr = ' '.join(map(str, [1, vx_selected,vy_selected]))
                     runcpp.get_positions(str_arr)
                     
-                    visualization.pygame_animate("positions.csv")
+                    visualization.pygame_animate("data/positions.csv")
                     
         if event.key == 'm':
             x, y = event.xdata, event.ydata
@@ -77,4 +77,4 @@ def get_axis_limits(ax):
     return ax.get_xlim(), ax.get_ylim()
 
 if __name__ == '__main__':
-    plot_proximity_heatmap('/Users/joeliang/Joe/Coding/3-Body-Problem/data/zoom.csv')
+    plot_proximity_heatmap('data/zoom.csv')

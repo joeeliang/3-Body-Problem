@@ -31,7 +31,7 @@ def cut_csv(filename, stop_row):
             if row_num > stop_row * 3 + stop_row - 1:
                 break
     print(rows)
-    with open('cut_' + filename, 'w', newline='') as file:
+    with open('data/cut_positions.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         for i in range(stop_row):
             for j in range(3):
@@ -41,6 +41,6 @@ def cut_csv(filename, stop_row):
 def loop_csv():
     positions = visualization.read_csv('data/positions.csv', 3)
     min_step = proximity(positions)
-    cut_csv('positions.csv', min_step + 1)
+    cut_csv('data/positions.csv', min_step + 1)
     visualization.pygame_animate("data/cut_positions.csv", loop = True)
     

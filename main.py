@@ -11,7 +11,7 @@ def generate_data_and_plot(plot):
         y = plot.get_ylim()
         input1 = f"{x[0]} {x[1]} {y[0]} {y[1]}"
         runcpp.run(input1, 50)
-        plot = heatmap.plot_proximity_heatmap("/Users/joeliang/Joe/Coding/3-Body-Problem/data/zoom.csv")
+        plot = heatmap.plot_proximity_heatmap("data/zoom.csv")
     return plot
 
 def main():
@@ -19,26 +19,26 @@ def main():
     
     # Set up the display
     screen = pygame.display.set_mode((100, 100))
-    pygame.display.set_caption("Press 'q' to generate new data and create a new diagram.")
+    pygame.display.set_caption("Press 'u' to create animation.")
     
     clock = pygame.time.Clock()
     
-    print("Press 'q' to generate new data and create a new diagram.")
+    print("Zoom in, press q to enhance. Press u to create the animation. Press n to loop the animation.")
     
-    plot = heatmap.plot_proximity_heatmap("/Users/joeliang/Joe/Coding/3-Body-Problem/data/fullMap.csv")
+    plot = heatmap.plot_proximity_heatmap("data/fullMap.csv")
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                # if event.key == pygame.K_q:
-                #     print("Generating new data and creating a new diagram...")
-                #     plot = generate_data_and_plot(plot)
-                #     print("Done. Press 'q' again to generate new data and create a new diagram.")
+                if event.key == pygame.K_q:
+                    print("Generating new data and creating a new diagram...")
+                    plot = generate_data_and_plot(plot)
+                    print("Done. Press 'q' again to generate new data and create a new diagram.")
                 if event.key == pygame.K_n:
                     print("Doing loop")
-                    # loop_csv()
+                    loop_csv()
             
         # Limit the frame rate
         clock.tick(30)

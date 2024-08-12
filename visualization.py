@@ -24,7 +24,7 @@ def read_csv(filename, num_bodies):
     return positions
 
 
-def pygame_run(initial, recording = False):
+def pygame_run(initial, recording = True):
     system=System(state=initial)
     # Integrate system
     num_steps = 2000
@@ -73,6 +73,7 @@ def pygame_run(initial, recording = False):
 def pygame_animate(positions_path, loop = False):
     num_bodies = 3  # assuming 3 bodies in your system
     positions = read_csv(positions_path, num_bodies)
+    print(positions_path)
 
     system=System(state=np.zeros(12))
     class Canvas:
@@ -86,7 +87,7 @@ def pygame_animate(positions_path, loop = False):
 
     canvas = Canvas()
     WIN = pygame.display.set_mode((1000, 1000))
-    for i in range(positions.shape[0]):
+    for i in range(positions.shape[0]*3):
         WIN.fill((10,10,10))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
