@@ -9,7 +9,7 @@ class System:
             self.bodies = []
             for body in range(int(len(state)/4)):
                 n = int(body*4)
-                self.bodies.append(Body(mass=1.0, position=[state[0+n], state[1+n]], velocity=[state[2+n], state[3+n]]))
+                self.bodies.append(Body(mass=1.0, position=[state[0+n], state[1+n]], velocity=[state[2+n], state[3+n]], body_id=body))
         else:
             self.bodies = bodies
 

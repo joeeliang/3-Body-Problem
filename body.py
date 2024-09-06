@@ -2,38 +2,71 @@ import numpy as np
 import pygame
 import random
 
+star_image = pygame.image.load('star_sprite.jpg')  # Transparent background
+star_image = pygame.image.load('star_sprite.jpg')
+black = (0,0,0)  # RGB value for black
+star_image.set_colorkey(black)
+star_image = pygame.transform.scale(star_image, (40, 40))  # Resize if needed
+preset_colours = [(219, 255, 254),(255, 235, 205),(255, 80, 0)]
+
 class Body:
-    def __init__(self, mass, position, velocity):
+    def __init__(self, mass, position, velocity, body_id):
         self.mass = mass
         self.position = np.array(position)
         self.velocity = np.array(velocity)
-        r = random.randint(100, 200)
-        g = random.randint(100, 200)
-        b = random.randint(100, 200)
-        self.colour = (r,g,b)
+        self.colour = preset_colours[body_id]
 
-    def compute_acceleration(self, other_bodies, G=1.0, softening=0.2):
-        acceleration = np.zeros(2)
-        for other in other_bodies:
-            if other is not self:
-                r = other.position - self.position
-                distance = np.linalg.norm(r)
-                acceleration += G * other.mass * r / np.maximum(distance**3, softening**3)
-        return acceleration
+        # Pre-create the glow surface (done once during initialization)
+        glow_size = 200
+        self.glow_surface = pygame.Surface((glow_size, glow_size), pygame.SRCALPHA)
     
+        glow_x = glow_size / 2
+        glow_y = glow_x
+
+        # Draw glow once
+        for radius, alpha in zip(range(67, 0, -5), range(1, 30, 5)):
+            pygame.draw.circle(self.glow_surface, (*self.colour, alpha), (glow_x, glow_y), radius)
+
     def draw(self, frame, system, positions, win):
         scale = 200
         x = positions[frame, system.bodies.index(self), 0] * scale + 500
         y = 1000 - (positions[frame, system.bodies.index(self), 1] * scale + 500)
+        
+        # Blit the pre-created glow surface onto the main window
+        win.blit(self.glow_surface, (x - self.glow_surface.get_width() // 2, y - self.glow_surface.get_height() // 2))
+
+        # Draw the celestial body (star)
         pygame.draw.circle(win, self.colour, (x, y), 10)
+
+        # Create a transparent surface for the trail (supports alpha)
+        trail_surface = pygame.Surface((win.get_width(), win.get_height()), pygame.SRCALPHA)
+
+        # Draw the fading trail if frame > 2
         if frame > 2:
-            updatedPoints = []
-            for point in positions[:frame, system.bodies.index(self)]:
-                x = point[0] * scale + 500
-                y = 1000 - (point[1] * scale + 500)
-                updatedPoints.append((x, y))
-            pygame.draw.lines(win, self.colour, False, updatedPoints, 3)
-    
+            trail_length = min(300, frame)  # Limit the trail length to the last 50 points
+            for i in range(trail_length - 1):
+                # Get two consecutive points to draw a segment
+                point1 = positions[frame - i - 1, system.bodies.index(self)]
+                point2 = positions[frame - i - 2, system.bodies.index(self)]
+
+                # Scale positions
+                x1 = point1[0] * scale + 500
+                y1 = 1000 - (point1[1] * scale + 500)
+                x2 = point2[0] * scale + 500
+                y2 = 1000 - (point2[1] * scale + 500)
+
+                # Calculate fading alpha based on the age of the point
+                fade_factor = int(255 * (1 - i / trail_length))
+                
+                # Draw the fading segment on the trail surface
+                colour_with_alpha = (*self.colour[:3], fade_factor)  # Apply fade_factor to the alpha component
+                pygame.draw.line(trail_surface, colour_with_alpha, (x1, y1), (x2, y2), 3)
+
+            # Blit the trail surface onto the main window
+            win.blit(trail_surface, (0, 0))
+
+
+
     def draw_loop(self, system, positions, win):
         scale = 200
         updatedPoints = []
