@@ -2,11 +2,7 @@ import numpy as np
 import pygame
 import random
 
-star_image = pygame.image.load('star_sprite.jpg')  # Transparent background
-star_image = pygame.image.load('star_sprite.jpg')
 black = (0,0,0)  # RGB value for black
-star_image.set_colorkey(black)
-star_image = pygame.transform.scale(star_image, (40, 40))  # Resize if needed
 preset_colours = [(219, 255, 254),(255, 235, 205),(255, 80, 0)]
 
 class Body:
@@ -42,39 +38,28 @@ class Body:
         trail_surface = pygame.Surface((win.get_width(), win.get_height()), pygame.SRCALPHA)
 
         # Draw the fading trail if frame > 2
-        if frame > 2:
-            trail_length = min(300, frame)  # Limit the trail length to the last 50 points
-            for i in range(trail_length - 1):
-                # Get two consecutive points to draw a segment
-                point1 = positions[frame - i - 1, system.bodies.index(self)]
-                point2 = positions[frame - i - 2, system.bodies.index(self)]
 
-                # Scale positions
-                x1 = point1[0] * scale + 500
-                y1 = 1000 - (point1[1] * scale + 500)
-                x2 = point2[0] * scale + 500
-                y2 = 1000 - (point2[1] * scale + 500)
+        trail_length = positions.shape[0] - 1  # Limit the trail length to the last 50 points
+        for i in range(trail_length, 1, -1):
+            # Get two consecutive points to draw a segment
+            point1 = positions[frame - i, system.bodies.index(self)]
+            point2 = positions[frame - i + 1, system.bodies.index(self)]
 
-                # Calculate fading alpha based on the age of the point
-                fade_factor = int(255 * (1 - i / trail_length))
-                
-                # Draw the fading segment on the trail surface
-                colour_with_alpha = (*self.colour[:3], fade_factor)  # Apply fade_factor to the alpha component
-                pygame.draw.line(trail_surface, colour_with_alpha, (x1, y1), (x2, y2), 3)
+            # Scale positions
+            x1 = point1[0] * scale + 500
+            y1 = 1000 - (point1[1] * scale + 500)
+            x2 = point2[0] * scale + 500
+            y2 = 1000 - (point2[1] * scale + 500)
 
-            # Blit the trail surface onto the main window
-            win.blit(trail_surface, (0, 0))
+            # Calculate fading alpha based on the age of the point
+            fade_factor = int(255 * (1 - i / trail_length))
+            
+            # Draw the fading segment on the trail surface
+            colour_with_alpha = (*self.colour[:3], fade_factor)  # Apply fade_factor to the alpha component
+            pygame.draw.line(trail_surface, colour_with_alpha, (x1, y1), (x2, y2), 3)
 
-
-
-    def draw_loop(self, system, positions, win):
-        scale = 200
-        updatedPoints = []
-        for point in positions[:, system.bodies.index(self)]:
-            x = point[0] * scale + 500
-            y = 1000 - (point[1] * scale + 500)
-            updatedPoints.append((x, y))
-        pygame.draw.lines(win, self.colour, False, updatedPoints, 3)
+        # Blit the trail surface onto the main window
+        win.blit(trail_surface, (0, 0))
 
     def get_state(self):
         return np.array([self.position[0], self.position[1], self.velocity[0], self.velocity[1]])

@@ -5,6 +5,8 @@ import numpy as np
 from tqdm import tqdm
 from matplotlib.animation import FuncAnimation
 
+'''This version is a single page python script that outlines the logic of the 3 body problem. There are no fancy animations or anything, just balls orbitting.'''
+
 class Body:
     def __init__(self, mass, position, velocity):
         self.mass = mass

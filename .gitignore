@@ -1,6 +1,9 @@
 # Gradle files
 .gradle/
 build/
+venv/
+.vscode/
+__pycache__/
 
 # Local configuration file (sdk path, etc)
 local.properties

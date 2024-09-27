@@ -4,27 +4,30 @@ import visualization
 from utils import make_state
 import pandas as pd
 import runcpp
+from closest_position import loop_csv
 import os
 
-def plot_proximity_heatmap(data_path):
+def plot_proximity_heatmap(data_path,next=False):
     data = pd.read_csv(data_path)
     vx_values = data['vx'].values
     vy_values = data['vy'].values
     proximity_values = data['proximity'].values
+
     # Reshape the proximity_values into a 2D array for heatmap plotting
     num_vx = len(np.unique(vx_values))
     num_vy = len(np.unique(vy_values))
     proximity_heatmap = proximity_values.reshape(num_vy, num_vx)
     threshold = 3.5
+
     # Apply binary threshold
     proximity_heatmap[proximity_heatmap >= threshold] = np.nan  # Set values above threshold to NaN
-    
+
     vx_range = np.unique(vx_values)
     vy_range = np.unique(vy_values)
     
     extent = [vx_range.min(), vx_range.max(), vy_range.min(), vy_range.max()]
     cmap = plt.cm.get_cmap('hot')
-    cmap.set_under('cyan') 
+    cmap.set_under('cyan')
     plt.imshow(proximity_heatmap, origin='lower', cmap=cmap, extent=extent, aspect='auto', vmin=0.002)
     plt.colorbar(label='proximity')
     plt.xlabel('vx')
@@ -59,18 +62,79 @@ def plot_proximity_heatmap(data_path):
                     print("Calling animation.animate with:", vx_selected, vy_selected)
                     str_arr = ' '.join(map(str, [1, vx_selected,vy_selected]))
                     runcpp.get_positions(str_arr)
-                    
                     visualization.pygame_animate("data/positions.csv")
-                    
         if event.key == 'm':
             x, y = event.xdata, event.ydata
             if x is not None and y is not None:
                 print(x, y)
-            
+        if event.key == 'h':
+            plt.axis([0,1,0,1])
+        if event.key == 'n':
+            print("Doing loop")
+            loop_csv()
+            visualization.pygame_animate("data/cut_positions.csv")
+        if event.key == "i":
+            xLim = plt.gca().get_xlim()
+            yLim = plt.gca().get_ylim()
+            plt.close()
+            print("Generating new plot")
+            enhance(xLim, yLim)
+            print("done")
+        if event.key == 'z':
+            xLim = plt.gca().get_xlim()
+            yLim = plt.gca().get_ylim()
+            x, y = find_minimum_proximity("data/zoom.csv", xLim, yLim)
+            zoom_factor = abs(xLim[0]-xLim[1])/4
+            zoom(x, y, zoom_factor)
+            plt.draw()
+        if event.key == "a":
+            auto(ax)
+
     ax = plt.gca()
     plt.gcf().canvas.mpl_connect('key_press_event', on_key)
-    plt.show()
-    
+    if next:
+        plt.show(block=False)
+    else:
+        plt.show()
+    return ax
+
+def zoom(x, y ,factor):
+    plt.axis([x - factor, x + factor, y - factor, y + factor])
+
+def auto(ax):
+    for a in range(6):
+        print(a)
+        plt.sca(ax)
+        xLim = plt.gca().get_xlim()
+        yLim = plt.gca().get_ylim()
+        x, y = find_minimum_proximity("data/zoom.csv", xLim, yLim)
+        zoom_factor = abs(xLim[0]-xLim[1])/4
+        zoom(x, y, zoom_factor)
+        plt.draw()
+        xLim = plt.gca().get_xlim()
+        yLim = plt.gca().get_ylim()
+        plt.close()
+        print("Generating new plot")
+        ax = enhance(xLim, yLim)
+        plt.sca(ax)
+        print("done")
+    plt.close()
+    plot_proximity_heatmap("data/zoom.csv")
+
+def find_minimum_proximity(csv_file, xLim, yLim):
+    df = pd.read_csv(csv_file)
+    df_filtered = df[(df['vx'] >= xLim[0]) & (df['vx'] <= xLim[1]) & (df['vy'] >= yLim[0]) & (df['vy'] <= yLim[1])]
+    min_proximity_row = df_filtered.loc[df_filtered['proximity'].idxmin()]
+    print(df_filtered['proximity'].min())
+    x, y = min_proximity_row['vx'], min_proximity_row['vy']
+    print(x, y)
+    return x, y
+
+def enhance(xLim, yLim):
+    input1 = f"{xLim[0]} {xLim[1]} {yLim[0]} {yLim[1]}"
+    runcpp.run(input1, 50)
+    ax = plot_proximity_heatmap("data/zoom.csv", next=True)
+    print("hello")
     return ax
 
 def get_axis_limits(ax):

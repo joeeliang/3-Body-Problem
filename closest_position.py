@@ -16,7 +16,6 @@ def proximity(positions):
         di = distance
     return min_step
 
-
 def cut_csv(filename, stop_row):
     with open(filename, 'r') as file:
         reader = csv.reader(file)
@@ -39,8 +38,8 @@ def cut_csv(filename, stop_row):
             writer.writerow([])
 
 def loop_csv():
+    '''Creates new CSV file with the positions so that it is looped as closest as it can be. Truncated at point of closest proximinty.'''
     positions = visualization.read_csv('data/positions.csv', 3)
     min_step = proximity(positions)
     cut_csv('data/positions.csv', min_step + 1)
-    visualization.pygame_animate("data/cut_positions.csv", loop = True)
     

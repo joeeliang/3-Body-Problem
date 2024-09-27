@@ -1,16 +1,7 @@
 import subprocess
 import pandas as pd
+from utils import rearrange
 
-
-def rearrange(file_path):
-    # Sample CSV data
-    df = pd.read_csv(file_path)
-
-    # Sort by vy and then by vx
-    df_sorted = df.sort_values(by=['vy', 'vx'])
-    # df_sorted[['vx', 'vy']] = df_sorted[['vy', 'vx']]
-
-    df_sorted.to_csv(file_path, index=False)
 
 def run(input2, dimensions):
     # Define the inputs
