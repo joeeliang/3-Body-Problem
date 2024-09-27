@@ -1,6 +1,5 @@
 import pygame
 import subprocess
-import runcpp
 import heatmap
 import sys
 import matplotlib.pyplot as plt

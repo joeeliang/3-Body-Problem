@@ -1,9 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import visualization 
-from utils import make_state
+import utils
 import pandas as pd
-import runcpp
 from closest_position import loop_csv
 import os
 
@@ -61,7 +60,7 @@ def plot_proximity_heatmap(data_path,next=False):
                     # Debug print before calling the animation
                     print("Calling animation.animate with:", vx_selected, vy_selected)
                     str_arr = ' '.join(map(str, [1, vx_selected,vy_selected]))
-                    runcpp.get_positions(str_arr)
+                    utils.get_positions(str_arr)
                     visualization.pygame_animate("data/positions.csv")
         if event.key == 'm':
             x, y = event.xdata, event.ydata
@@ -132,7 +131,7 @@ def find_minimum_proximity(csv_file, xLim, yLim):
 
 def enhance(xLim, yLim):
     input1 = f"{xLim[0]} {xLim[1]} {yLim[0]} {yLim[1]}"
-    runcpp.run(input1, 50)
+    utils.run(input1, 50)
     ax = plot_proximity_heatmap("data/zoom.csv", next=True)
     print("hello")
     return ax
