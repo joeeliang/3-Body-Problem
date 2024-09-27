@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import visualization 
 import utils
 import pandas as pd
-from closest_position import loop_csv
 import os
 
 def plot_proximity_heatmap(data_path,next=False):
@@ -70,7 +69,7 @@ def plot_proximity_heatmap(data_path,next=False):
             plt.axis([0,1,0,1])
         if event.key == 'n':
             print("Doing loop")
-            loop_csv()
+            utils.loop_csv()
             visualization.pygame_animate("data/cut_positions.csv")
         if event.key == "i":
             xLim = plt.gca().get_xlim()
