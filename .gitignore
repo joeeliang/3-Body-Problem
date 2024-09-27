@@ -5,6 +5,7 @@ venv/
 .vscode/
 __pycache__/
 tempCodeRunnerFile.py
+/Users/joeliang/Joe/Coding/3-Body-Problem/CMakeLists.txt
 
 # Local configuration file (sdk path, etc)
 local.properties

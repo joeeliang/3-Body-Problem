@@ -1,9 +1,8 @@
 import pygame
 import subprocess
-import heatmap
+import visualization
 import sys
 import matplotlib.pyplot as plt
-import heatmap
 
 def main():
     pygame.init()
@@ -14,7 +13,7 @@ def main():
     
     print("Zoom in, press q to enhance. Press u to create the animation. Press n to loop the animation.")
     
-    plot = heatmap.plot_proximity_heatmap("data/fullMap.csv")
+    plot = visualization.plot_proximity_heatmap("data/fullMap.csv")
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
