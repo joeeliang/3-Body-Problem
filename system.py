@@ -2,7 +2,7 @@ import numpy as np
 from utils import timer
 import pygame
 
-black = (0,0,0)  # RGB value for black
+black = (0,0,0)  # RGB value for the color black
 preset_colours = [(219, 255, 254),(255, 235, 205),(255, 80, 0)]
 
 class Body:

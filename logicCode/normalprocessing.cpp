@@ -1,3 +1,4 @@
+#define FMT_HEADER_ONLY
 #include <vector>
 #include <cmath>
 #include <array>
@@ -283,3 +284,4 @@ int main() {
     heatmap(system, proximity_wrapper, vx_start, vx_end, vy_start, vy_end, dimension);
     return 0;
 }
+
