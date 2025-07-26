@@ -6,6 +6,7 @@ import numpy as np
 import csv
 import utils
 import pandas as pd
+import os
 
 
 def plot_proximity_heatmap(data_path,next=False):
@@ -62,8 +63,9 @@ def plot_proximity_heatmap(data_path,next=False):
                     # Debug print before calling the animation
                     print("Calling animation.animate with:", vx_selected, vy_selected)
                     str_arr = ' '.join(map(str, [1, vx_selected,vy_selected]))
-                    utils.get_positions(str_arr)
-                    pygame_animate("data/positions.csv")
+                    utils.calculate_positions(str_arr)
+                    os.rename("data/positions.csv", "data/positions1.csv") #save as position 1
+                    pygame_animate("data/positions1.csv")
         if event.key == 'm':
             x, y = event.xdata, event.ydata
             if x is not None and y is not None:
@@ -94,7 +96,7 @@ def plot_proximity_heatmap(data_path,next=False):
     ax = plt.gca()
     plt.gcf().canvas.mpl_connect('key_press_event', on_key)
     if next:
-        plt.show(block=False)
+        plt.show()
     else:
         plt.show()
     return ax
@@ -158,14 +160,102 @@ def read_csv(filename, num_bodies):
                     frames = []
         if frames:  # check if frames is not empty
             positions.append(frames)
-    positions = np.array(positions)
+    end_state = positions[-1]
+    positions = np.array(positions[:-1])
     
-    return positions
+    return positions, end_state
+
+def continuous_animate():
+    # Calculate position 1
+    
+    # Calculate position 2
+    pygame_animate('position 1')
+    # position 2 to position 1
 
 def pygame_animate(positions_path):
     num_bodies = 3  # assuming 3 bodies in your system
-    positions = read_csv(positions_path, num_bodies)
+    frame_count = 0
+    running = True
 
+    system = System(state=np.zeros(12))  # Assuming 12 parameters for system state (3 bodies * 4 params like pos/vel?)
+
+    WIN = pygame.display.set_mode((1000, 1000))  # Sets window size for animation display
+    positions = np.empty((0, 3, 2))  # Initializes an empty array to store positions, assuming 3 bodies, 2D coordinates
+    while running:
+        # Reads positions from CSV file for the number of bodies (num_bodies)
+        temp_positions, end_state = read_csv(positions_path, num_bodies)
+        print(temp_positions.shape)
+        # Concatenates new positions to the previous positions
+        positions = np.concatenate((positions, temp_positions))
+        positions = positions[-2000:]
+        
+        # End state formatting, assumes end_state is a list with the final state of the bodies
+        end_state = ' '.join(map(str, end_state[0]))  
+        utils.calculate_positions(end_state, True)  # Assuming this function calculates and saves positions to a new file
+        
+        # Manages CSV file renaming for position tracking (updating file names between positions1 and positions2)
+        os.rename("data/positions.csv", "data/positions2.csv")
+        
+        # Looping through frames for animation
+        for i in range(temp_positions.shape[0]-1):  # Iterate through the position updates to animate each frame
+            WIN.fill((0, 0, 0))  # Fills the screen with black to clear for the next frame
+            for event in pygame.event.get():  # Event handling (e.g., closing the window)
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                    
+            # Draws each body onto the screen using the system's bodies and calculated positions
+            for body in system.bodies:
+                body.draw(min(positions.shape[0]-(temp_positions.shape[0]-i),999), system, positions[-(temp_positions.shape[0]-i)-999:-(temp_positions.shape[0]-i)+1], WIN)
+            
+            frame_count += 1
+            # Uncomment this line to save each frame as an image file
+            filename = "save/screen_%04d.png" % (frame_count)  
+            # pygame.image.save(WIN, filename)
+            pygame.display.flip()  # Updates the display with the new frame
+            pygame.time.delay(5)  # Short delay between frames (5ms)
+        
+        # Removes old CSV file and renames new one for the next loop iteration
+        os.remove("data/positions1.csv")
+        os.rename("data/positions2.csv", "data/positions1.csv")
+
+
+def video(positions_path):
+    frame_count = 0
+    num_bodies = 3  # assuming 3 bodies in your system
+    running = True
+
+    system=System(state=np.zeros(12))
+
+    WIN = pygame.display.set_mode((1000, 1000))
+    while running:
+        positions, end_state = read_csv(positions_path, num_bodies)
+        end_state = ' '.join(map(str, end_state[0]))
+        utils.calculate_positions(end_state, True) # save to positions 2
+        print("i made it here")
+        os.rename("data/positions.csv", "data/positions2.csv")
+        for i in range(positions.shape[0]): # the integer after is how many times the thing is looped.
+            WIN.fill((10,10,10))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+            for body in system.bodies:
+                body.draw(i % positions.shape[0], system, positions, WIN)
+            pygame.display.flip()
+            frame_count += 1
+            filename = "save/screen_%04d.png" % ( frame_count )
+            pygame.image.save( WIN, filename )
+            pygame.time.delay(20)
+        os.remove("data/positions1.csv")
+        os.rename("data/positions2.csv","data/positions1.csv")
+
+
+def pygame_animate_loop(positions_path):
+    num_bodies = 3  # assuming 3 bodies in your system
+    positions, end_state = read_csv(positions_path, num_bodies)
+
+    utils.calculate_positions(str_arr)
     system=System(state=np.zeros(12))
     class Canvas:
         def __init__(self):

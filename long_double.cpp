@@ -131,6 +131,15 @@ public:
                         }
                         file << "\n"; // Newline between steps
                     }
+                    std::stringstream ss;
+                    ss.precision(50);
+                    for (const auto& value : get_state()) {
+                        ss << value << ", ";
+                    }
+                    std::string state_str = ss.str();
+                    state_str.pop_back(); // Remove trailing comma
+                    state_str.pop_back(); // Remove trailing space
+                    file << state_str;
                     file.close();
                 } else {
                     std::cerr << "Unable to open file";
@@ -344,7 +353,7 @@ int main() {
     
     // Get the input string from the user
     std::string input;
-    std::cout << "What are we doing today? 'positions', 'energy' or 'normal'?";
+    std::cout << "Enter mode: ";
     std::cin >> mode;
     std::cin.ignore(); 
     if (mode == "positions"){
@@ -352,6 +361,20 @@ int main() {
         std::cout << "Enter d, vx, vy: ";
         std::cin >> d >> vx >> vy;
         std::vector<long double> initial_state = make_state(d, vx, vy);
+        system.set_state(initial_state);
+        std::vector<long double> result = system.integrate(0.01, 1000, true);
+    } else if (mode == "state"){
+        std::string input_state;
+        std::cout << "Enter initial state: ";
+        std::getline(std::cin, input_state);
+
+        std::istringstream iss(input_state);
+        std::string token;
+        std::vector<long double> initial_state;
+
+        while (std::getline(iss, token, ' ')) {
+            initial_state.push_back(std::stold(token));
+        }
         system.set_state(initial_state);
         std::vector<long double> result = system.integrate(0.01, 1000, true);
     } else {

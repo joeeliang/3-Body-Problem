@@ -24,7 +24,7 @@ class Body:
             pygame.draw.circle(self.glow_surface, (*self.colour, alpha), (glow_x, glow_y), radius)
 
     def draw(self, frame, system, positions, win):
-        scale = 200
+        scale = 250
         x = positions[frame, system.bodies.index(self), 0] * scale + 500
         y = 1000 - (positions[frame, system.bodies.index(self), 1] * scale + 500)
         
@@ -32,7 +32,7 @@ class Body:
         win.blit(self.glow_surface, (x - self.glow_surface.get_width() // 2, y - self.glow_surface.get_height() // 2))
 
         # Draw the celestial body (star)
-        pygame.draw.circle(win, self.colour, (x, y), 10)
+        pygame.draw.circle(win, self.colour, (x, y), 20)
 
         # Create a transparent surface for the trail (supports alpha)
         trail_surface = pygame.Surface((win.get_width(), win.get_height()), pygame.SRCALPHA)

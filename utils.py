@@ -64,8 +64,11 @@ def run(input2, dimensions):
     print("Output:", output.decode())
     rearrange("data/zoom.csv")
 
-def get_positions(state):
-    input1 = str("positions" + "\n")
+def calculate_positions(state, own_state= False):
+    if own_state:
+        input1 = str("state" + "\n")
+    else:
+        input1 = str("positions" + "\n")
     input2 = str(state)
 
     # Define the command to run the executable
@@ -89,6 +92,7 @@ def get_positions(state):
 
     # You can also capture the output of the program if it prints anything to stdout
     print("Output:", output.decode())
+
 
 def proximity(positions):
     initial_state = positions[0].flatten()
