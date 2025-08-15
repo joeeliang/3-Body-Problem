@@ -5,22 +5,25 @@ import sys
 import matplotlib.pyplot as plt
 
 def main():
-    pygame.init()
+    visualization.video('data/positions1.csv')
+    print("done")
+    # # print("penis")
+    # pygame.init()
     
-    pygame.display.set_caption("Press 'u' to create animation.")
+    # pygame.display.set_caption("Press 'u' to create animation.")
     
-    clock = pygame.time.Clock()
+    # clock = pygame.time.Clock()
     
-    print("Zoom in, press i to enhance. Press u to create the animation. Press n to loop the animation.")
+    # print("Zoom in, press i to enhance. Press u to create the animation. Press n to loop the animation.")
     
-    plot = visualization.plot_proximity_heatmap("data/fullMap.csv")
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+    # plot = visualization.plot_proximity_heatmap("data/fullMap.csv")
+    # while True:
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             pygame.quit()
+    #             sys.exit()
 
-        clock.tick(1)
+    #     clock.tick(60)
 
 if __name__ == "__main__":
     main()

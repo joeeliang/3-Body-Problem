@@ -211,7 +211,7 @@ def pygame_animate(positions_path):
             frame_count += 1
             # Uncomment this line to save each frame as an image file
             filename = "save/screen_%04d.png" % (frame_count)  
-            # pygame.image.save(WIN, filename)
+            pygame.image.save(WIN, filename)
             pygame.display.flip()  # Updates the display with the new frame
             pygame.time.delay(5)  # Short delay between frames (5ms)
         
@@ -289,3 +289,4 @@ def plot_energy(delta_energy):
     plt.ylabel('Energy Difference')
     plt.title('Energy Conservation Over Time')
     plt.show()
+

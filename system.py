@@ -29,7 +29,7 @@ class Body:
         y = 1000 - (positions[frame, system.bodies.index(self), 1] * scale + 500)
         
         # Blit the pre-created glow surface onto the main window
-        win.blit(self.glow_surface, (x - self.glow_surface.get_width() // 2, y - self.glow_surface.get_height() // 2))
+        # win.blit(self.glow_surface, (x - self.glow_surface.get_width() // 2, y - self.glow_surface.get_height() // 2))
 
         # Draw the celestial body (star)
         pygame.draw.circle(win, self.colour, (x, y), 20)
