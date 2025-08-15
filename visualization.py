@@ -7,6 +7,7 @@ import csv
 import utils
 import pandas as pd
 import os
+from visualization.gui import ControlPanel
 
 
 def plot_proximity_heatmap(data_path,next=False):
@@ -46,55 +47,58 @@ def plot_proximity_heatmap(data_path,next=False):
 
     # plt.gca().format_coord = format_coord
 
-    # Event handler for key press
     vx_selected = None
     vy_selected = None
-    def on_key(event):
+
+    def on_click(event):
         nonlocal vx_selected, vy_selected
-        if event.key == 'u':
-            x, y = event.xdata, event.ydata
-            if x is not None and y is not None:
-                if vx_range.min() <= x <= vx_range.max() and vy_range.min() <= y <= vy_range.max():
-                    x_index = int((x- vx_range.min()) / (vx_range.max() - vx_range.min()) * (num_vx))
-                    y_index = int((y- vy_range.min()) / (vy_range.max() - vy_range.min()) * (num_vy))
-                    vx_selected = vx_range[x_index]
-                    vy_selected = vy_range[y_index]
-                    print(f'Pressed u at (vx, vy): {vx_selected}, {vy_selected}, {proximity_heatmap[y_index, x_index]}')
-                    # Debug print before calling the animation
-                    print("Calling animation.animate with:", vx_selected, vy_selected)
-                    str_arr = ' '.join(map(str, [1, vx_selected,vy_selected]))
-                    utils.calculate_positions(str_arr)
-                    os.rename("data/positions.csv", "data/positions1.csv") #save as position 1
-                    pygame_animate("data/positions1.csv")
-        if event.key == 'm':
-            x, y = event.xdata, event.ydata
-            if x is not None and y is not None:
-                print(x, y)
-        if event.key == 'h':
-            plt.axis([0,1,0,1])
-        if event.key == 'n':
-            print("Doing loop")
-            utils.loop_csv()
-            pygame_animate("data/cut_positions.csv")
-        if event.key == "i":
-            xLim = plt.gca().get_xlim()
-            yLim = plt.gca().get_ylim()
-            plt.close()
-            print("Generating new plot")
-            enhance(xLim, yLim)
-            print("done")
-        if event.key == 'z':
-            xLim = plt.gca().get_xlim()
-            yLim = plt.gca().get_ylim()
-            x, y = find_minimum_proximity("data/zoom.csv", xLim, yLim)
-            zoom_factor = abs(xLim[0]-xLim[1])/4
-            zoom(x, y, zoom_factor)
-            plt.draw()
-        if event.key == "a":
-            auto(ax)
+        x, y = event.xdata, event.ydata
+        if x is not None and y is not None:
+            if vx_range.min() <= x <= vx_range.max() and vy_range.min() <= y <= vy_range.max():
+                x_index = int((x - vx_range.min()) / (vx_range.max() - vx_range.min()) * num_vx)
+                y_index = int((y - vy_range.min()) / (vy_range.max() - vy_range.min()) * num_vy)
+                vx_selected = vx_range[x_index]
+                vy_selected = vy_range[y_index]
+                print(f"Selected (vx, vy): {vx_selected}, {vy_selected}, {proximity_heatmap[y_index, x_index]}")
+
+    def do_animate(_event):
+        if vx_selected is not None and vy_selected is not None:
+            str_arr = ' '.join(map(str, [1, vx_selected, vy_selected]))
+            utils.calculate_positions(str_arr)
+            os.rename("data/positions.csv", "data/positions1.csv")
+            pygame_animate("data/positions1.csv")
+
+    def do_loop(_event):
+        utils.loop_csv()
+        pygame_animate("data/cut_positions.csv")
+
+    def do_enhance(_event):
+        xLim = plt.gca().get_xlim()
+        yLim = plt.gca().get_ylim()
+        plt.close()
+        enhance(xLim, yLim)
+
+    def do_zoom(_event):
+        xLim = plt.gca().get_xlim()
+        yLim = plt.gca().get_ylim()
+        x, y = find_minimum_proximity("data/zoom.csv", xLim, yLim)
+        zoom_factor = abs(xLim[0] - xLim[1]) / 4
+        zoom(x, y, zoom_factor)
+        plt.draw()
+
+    def do_auto(_event):
+        auto(ax)
 
     ax = plt.gca()
-    plt.gcf().canvas.mpl_connect('key_press_event', on_key)
+    fig = plt.gcf()
+    fig.canvas.mpl_connect('button_press_event', on_click)
+    ControlPanel(fig, {
+        "Animate": do_animate,
+        "Loop": do_loop,
+        "Enhance": do_enhance,
+        "Zoom": do_zoom,
+        "Auto": do_auto,
+    })
     if next:
         plt.show()
     else:
